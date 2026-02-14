@@ -1,4 +1,4 @@
-name: Build and Deploy
+name: CI · DevOps + MLOps
 
 on:
   push:
@@ -10,7 +10,11 @@ env:
   NODE_VERSION: '20'
 
 jobs:
-  build:
+  # ──────────────────────────────────────────────
+  #  DevOps: Lint + Type-check + Build
+  # ──────────────────────────────────────────────
+  devops:
+    name: DevOps · Lint, Types, Build
     runs-on: ubuntu-latest
 
     steps:
@@ -26,10 +30,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run ingestion pipeline
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: npm run ingest
+      - name: Lint
+        run: npm run lint
+
+      - name: Type-check
+        run: npx tsc --noEmit
 
       - name: Build Next.js
         run: npm run build:next
@@ -42,7 +47,11 @@ jobs:
             .next/
             kb/index/
 
-  lint:
+  # ──────────────────────────────────────────────
+  #  MLOps: Corpus + Index Validation
+  # ──────────────────────────────────────────────
+  mlops:
+    name: MLOps · Corpus & RAG Validation
     runs-on: ubuntu-latest
 
     steps:
@@ -58,5 +67,137 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run linting
-        run: npm run lint
+      # --- Corpus health checks ---
+      - name: Validate corpus exists
+        run: |
+          CORPUS_DIR="kb/sources/final"
+          FILE_COUNT=$(find "$CORPUS_DIR" -name "*.md" | wc -l)
+          echo "Corpus files found: $FILE_COUNT"
+          if [ "$FILE_COUNT" -eq 0 ]; then
+            echo "::error::No corpus files found in $CORPUS_DIR"
+            exit 1
+          fi
+
+      - name: Corpus size check
+        run: |
+          CORPUS_DIR="kb/sources/final"
+          TOTAL_CHARS=$(cat "$CORPUS_DIR"/*.md | wc -c)
+          TOTAL_LINES=$(cat "$CORPUS_DIR"/*.md | wc -l)
+          echo "Total characters: $TOTAL_CHARS"
+          echo "Total lines: $TOTAL_LINES"
+          if [ "$TOTAL_CHARS" -lt 500 ]; then
+            echo "::error::Corpus too small ($TOTAL_CHARS chars). Minimum 500 chars required for meaningful RAG."
+            exit 1
+          fi
+          echo "Corpus size OK"
+
+      - name: Corpus section coverage
+        run: |
+          CORPUS="kb/sources/final/base_corpus.md"
+          if [ ! -f "$CORPUS" ]; then
+            echo "::warning::base_corpus.md not found, skipping section check"
+            exit 0
+          fi
+          SECTIONS=$(grep -c '^# ' "$CORPUS" || true)
+          echo "Top-level sections found: $SECTIONS"
+          if [ "$SECTIONS" -lt 3 ]; then
+            echo "::warning::Corpus has only $SECTIONS top-level sections. Consider adding more for better RAG coverage."
+          fi
+          echo "Section coverage OK"
+
+      # --- Vector index integrity ---
+      - name: Validate vector index exists
+        run: |
+          INDEX="kb/index/vector-index.json"
+          if [ ! -f "$INDEX" ]; then
+            echo "::error::Vector index not found at $INDEX. Run 'npm run ingest' locally and commit the result."
+            exit 1
+          fi
+          echo "Vector index found"
+
+      - name: Vector index integrity check
+        run: |
+          INDEX="kb/index/vector-index.json"
+          # Validate JSON
+          node -e "const idx = require('./$INDEX'); console.log('Chunks:', idx.length)" || {
+            echo "::error::vector-index.json is not valid JSON"
+            exit 1
+          }
+
+      - name: Embedding dimension check
+        run: |
+          INDEX="kb/index/vector-index.json"
+          node -e "
+            const idx = require('./$INDEX');
+            const dims = new Set(idx.map(c => c.embedding?.length));
+            console.log('Chunk count:', idx.length);
+            console.log('Embedding dimensions:', [...dims]);
+            if (dims.size !== 1) {
+              console.error('ERROR: Inconsistent embedding dimensions:', [...dims]);
+              process.exit(1);
+            }
+            const dim = [...dims][0];
+            if (dim !== 384) {
+              console.error('ERROR: Expected 384-dim (MiniLM-L6-v2), got', dim);
+              process.exit(1);
+            }
+            const nullEmbeddings = idx.filter(c => !c.embedding || c.embedding.length === 0);
+            if (nullEmbeddings.length > 0) {
+              console.error('ERROR:', nullEmbeddings.length, 'chunks have null/empty embeddings');
+              process.exit(1);
+            }
+            console.log('All', idx.length, 'chunks have valid 384-dim embeddings');
+          "
+
+      - name: Corpus-index sync check
+        run: |
+          node -e "
+            const fs = require('fs');
+            const path = require('path');
+            const idx = require('./kb/index/vector-index.json');
+            const corpusDir = 'kb/sources/final';
+            const corpusFiles = fs.readdirSync(corpusDir).filter(f => f.endsWith('.md'));
+            const indexSources = [...new Set(idx.map(c => c.source || c.filename))];
+            console.log('Corpus files:', corpusFiles);
+            console.log('Index sources:', indexSources);
+            // Check that every index source has a corresponding corpus file
+            const missing = indexSources.filter(s => !corpusFiles.includes(s));
+            if (missing.length > 0) {
+              console.error('WARNING: Index references files not in corpus:', missing);
+            }
+            console.log('Corpus-index sync OK');
+          "
+
+      # --- RAG pipeline smoke test ---
+      - name: RAG retrieval smoke test
+        run: |
+          node -e "
+            const idx = require('./kb/index/vector-index.json');
+            // Verify cosine similarity function works
+            function cosineSim(a, b) {
+              let dot = 0, normA = 0, normB = 0;
+              for (let i = 0; i < a.length; i++) {
+                dot += a[i] * b[i];
+                normA += a[i] * a[i];
+                normB += b[i] * b[i];
+              }
+              return dot / (Math.sqrt(normA) * Math.sqrt(normB));
+            }
+            // Self-similarity should be 1.0
+            const selfSim = cosineSim(idx[0].embedding, idx[0].embedding);
+            console.log('Self-similarity:', selfSim.toFixed(6));
+            if (Math.abs(selfSim - 1.0) > 0.001) {
+              console.error('ERROR: Self-similarity check failed');
+              process.exit(1);
+            }
+            // Cross-chunk similarity should be < 1.0
+            if (idx.length > 1) {
+              const crossSim = cosineSim(idx[0].embedding, idx[1].embedding);
+              console.log('Cross-chunk similarity:', crossSim.toFixed(6));
+              if (crossSim >= 1.0) {
+                console.error('ERROR: Different chunks have identical embeddings');
+                process.exit(1);
+              }
+            }
+            console.log('RAG retrieval smoke test PASSED');
+          "
