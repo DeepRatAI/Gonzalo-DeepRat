@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🧠 AI Portfolio Template
+# AI Portfolio Template
 
 ### A production-ready portfolio website with a built-in RAG chatbot
 
@@ -22,7 +22,7 @@
 
 ---
 
-## ✨ What is this?
+## What is this?
 
 A **modern portfolio website** with an embedded **RAG-powered AI chatbot** that answers questions about you — your projects, skills, experience, and anything else you write in a simple Markdown file.
 
@@ -32,17 +32,17 @@ Built for developers, AI engineers, and anyone who wants their portfolio to *tal
 
 | Feature | Details |
 |---------|---------|
-| 🤖 **RAG Chatbot** | Retrieval-Augmented Generation grounded in your own knowledge base — no hallucinations about you |
-| ⚡ **Streaming responses** | Real-time SSE streaming with Gemini 2.5 Flash |
-| 🎨 **Dark-first design** | Glass morphism, gradient orbs, animated background, fully responsive |
-| 🔒 **Security built-in** | Rate limiting, prompt injection defense, PII protection |
-| 📱 **Mobile-ready** | Responsive across all screen sizes |
-| 🔍 **SEO optimized** | OpenGraph, Twitter cards, JSON-LD schema, sitemap, robots.txt |
-| 🚀 **One-command deploy** | Push to GitHub → auto-deploys on Vercel |
+| **RAG Chatbot** | Retrieval-Augmented Generation grounded in your own knowledge base — no hallucinations about you |
+| **Streaming responses** | Real-time SSE streaming with Gemini 2.5 Flash |
+| **Dark-first design** | Glass morphism, gradient orbs, animated background, fully responsive |
+| **Security built-in** | Rate limiting, prompt injection defense, PII protection |
+| **Mobile-ready** | Responsive across all screen sizes |
+| **SEO optimized** | OpenGraph, Twitter cards, JSON-LD schema, sitemap, robots.txt |
+| **One-command deploy** | Push to GitHub → auto-deploys on Vercel |
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 ┌─────────────────────────────────────────────────┐
@@ -64,7 +64,7 @@ Built for developers, AI engineers, and anyone who wants their portfolio to *tal
 
 ---
 
-## 🚀 Use it as YOUR portfolio
+## Use it as YOUR portfolio
 
 This is the fun part. You don't need to build anything from scratch — just customize the content.
 
@@ -83,7 +83,7 @@ npm install
 | **Google AI Studio** | Gemini 2.5 Flash (chat generation) | [aistudio.google.com](https://aistudio.google.com/apikey) |
 | **HuggingFace** | Sentence embeddings (RAG retrieval) | [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens) |
 
-Both have **generous free tiers** — more than enough for a personal portfolio.
+Both have generous free tiers — more than enough for a personal portfolio.
 
 Create a `.env.local` file in the project root:
 
@@ -110,15 +110,15 @@ A real-time analytics dashboard built with...
 Python, React, PostgreSQL, Docker, AWS...
 
 # Experience
-- 2024–present: Senior Dev at Company
-- 2022–2024: Dev at Startup
+- 2024-present: Senior Dev at Company
+- 2022-2024: Dev at Startup
 
 # Contact
 Email: jane@example.com
 LinkedIn: linkedin.com/in/janedoe
 ```
 
-> 💡 **Tip:** Write it like you're briefing a human assistant about yourself. The RAG system chunks it, embeds it, and retrieves the relevant parts per question.
+> **Tip:** Write it like you're briefing a human assistant about yourself. The RAG system chunks it, embeds it, and retrieves the relevant parts per question.
 
 ### 4. Customize the UI
 
@@ -126,7 +126,7 @@ The main sections live in `src/components/`:
 
 | File | Section | What to change |
 |------|---------|----------------|
-| `hero-section.tsx` | Landing/Hero | Your name, title, tagline |
+| `hero-section.tsx` | Landing / Hero | Your name, title, tagline |
 | `projects-section.tsx` | Projects | Your projects, banners, descriptions |
 | `stack-section.tsx` | Tech Stack | Your technologies and categories |
 | `contact-section.tsx` | Contact | Your email, LinkedIn, GitHub |
@@ -150,15 +150,15 @@ Open [localhost:3000](http://localhost:3000) and talk to your AI assistant.
 ### 6. Deploy to Vercel (free)
 
 1. Push your repo to GitHub
-2. Go to [vercel.com/new](https://vercel.com/new) → Import your repo
+2. Go to [vercel.com/new](https://vercel.com/new) and import your repo
 3. Add `GOOGLE_AI_API_KEY` and `HF_TOKEN` as Environment Variables
-4. Click **Deploy** — done ✨
+4. Click **Deploy**
 
 Every push to `main` auto-deploys.
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 ├── kb/
@@ -185,7 +185,7 @@ Every push to `main` auto-deploys.
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
@@ -199,7 +199,7 @@ Every push to `main` auto-deploys.
 
 ---
 
-## 📜 Scripts
+## Scripts
 
 ```bash
 npm run dev        # Start dev server (Turbopack)
@@ -211,15 +211,15 @@ npm run start      # Start production server
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Found a bug? Have an idea? PRs and issues are welcome.
 
-If you build your own portfolio with this template, I'd love to see it — drop me a message!
+If you build your own portfolio with this template, I'd love to see it — drop me a message.
 
 ---
 
-## 📄 License
+## License
 
 MIT — use it, fork it, make it yours.
 
