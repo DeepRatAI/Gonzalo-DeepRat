@@ -23,7 +23,7 @@ const PROJECTS = [
       "PII detection & configurable redaction pipeline",
       "Full audit trail with structured logging",
     ],
-    github: "https://github.com/DeepRatAI/Cortex",
+    github: "https://github.com/DeepRatAI/cortex-knowledge-assistant",
     badge: "featured" as const,
   },
   {
@@ -39,7 +39,7 @@ const PROJECTS = [
       "Source-grounded responses with citation",
       "Evaluation-first development methodology",
     ],
-    github: "https://github.com/DeepRatAI",
+    github: "https://github.com/DeepRatAI/Med-X-KimiK2-RAG",
     badge: "updating" as const,
   },
   {
