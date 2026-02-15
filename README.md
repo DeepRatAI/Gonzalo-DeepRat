@@ -3,7 +3,7 @@
 # AI Portfolio Template
 
 ### A production-ready portfolio website with a built-in RAG chatbot
-
+[![CI · DevOps + MLOps](https://github.com/DeepRatAI/ai-portfolio-template/actions/workflows/build.yml/badge.svg)](https://github.com/DeepRatAI/ai-portfolio-template/actions/workflows/build.yml)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)
@@ -12,7 +12,7 @@
 
 <br/>
 
-**Live demo → [deeprat.tech](https://deeprat.tech)**
+**Live demo → [gonzaloromeroai.com](https://gonzaloromeroai.com)**
 
 <br/>
 
