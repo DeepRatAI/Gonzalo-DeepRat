@@ -158,9 +158,6 @@ Your role:
           
         } catch (streamError) {
           console.error("[Chat API] Stream error:", streamError);
-          const errorMessage = streamError instanceof Error 
-            ? streamError.message 
-            : "An error occurred";
           controller.enqueue(createSSEMessage({ 
             content: `Sorry, I encountered an error. Please try again.` 
           }));
